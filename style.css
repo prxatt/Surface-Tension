@@ -1,0 +1,43 @@
+/* style.css */
+/* Basic reset and dark background */
+body {
+    margin: 0;
+    background-color: #000;
+    overflow: hidden; /* hide scrollbars */
+    color: #fff;
+    font-family: sans-serif;
+}
+/* Neon flickering 'In the Lab' (tube-light style) */
+#lab-loading {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    font-size: 2em;
+    color: #0f0;
+    text-shadow: 0 0 5px #0f0, 0 0 10px #0f0, 0 0 20px #0f0;
+    animation: flicker 3s infinite;
+}
+/* Flicker animation for neon effect */
+@keyframes flicker {
+    0%, 100% {opacity: 1;}
+    50% {opacity: 0.2;}
+}
+/* Centered main title text */
+#surface-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 6vw;
+    color: #fff;
+    cursor: pointer;
+    user-select: none;
+}
+/* Fullscreen canvas for starfield */
+#star-canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
