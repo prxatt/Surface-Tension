@@ -4,19 +4,76 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Surface Tension</title>
-  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Unica+One&family=Orbitron:wght@600&display=swap" rel="stylesheet">
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      font-family: 'Orbitron', sans-serif;
+      background-color: #000000;
+      height: 100%;
+      width: 100%;
+    }
+
+    canvas#bg {
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: 0;
+    }
+
+    .content {
+      z-index: 10;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+      color: #ffffff;
+    }
+
+    h1#surface-text {
+      font-size: 3em;
+      letter-spacing: 4px;
+      text-shadow: 0 0 12px #fff, 0 0 18px #0ff;
+      cursor: pointer;
+      transition: all 0.3s ease-in-out;
+    }
+
+    h1#surface-text.binary {
+      font-family: 'Unica One', monospace;
+      font-size: 2.5em;
+    }
+
+    p#lab-text {
+      font-size: 1.2em;
+      font-weight: bold;
+      margin-top: 10px;
+      color: #f0f;
+      animation: flicker 2s linear infinite;
+      text-shadow: 0 0 8px #f0f, 0 0 18px #f0f;
+    }
+
+    @keyframes flicker {
+      0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% {
+        opacity: 1;
+      }
+      20%, 22%, 24%, 55% {
+        opacity: 0.3;
+      }
+    }
+  </style>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/TextPlugin.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
 </head>
 <body>
   <canvas id="bg"></canvas>
-
   <div class="content">
     <h1 id="surface-text">SURFACE TENSION</h1>
     <p id="lab-text">IN THE LAB</p>
   </div>
-
   <audio autoplay loop>
     <source src="assets/Ethereal Horizons v2.mp3" type="audio/mp3">
   </audio>
@@ -29,31 +86,37 @@
     renderer.setSize(window.innerWidth, window.innerHeight);
     camera.position.z = 1;
 
-    for (let i = 0; i < 1000; i++) {
-      const starGeo = new THREE.SphereGeometry(0.05, 24, 24);
-      const starMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
-      const star = new THREE.Mesh(starGeo, starMat);
-      star.position.set((Math.random() - 0.5) * 1000, (Math.random() - 0.5) * 1000, (Math.random() - 0.5) * 1000);
+    const stars = [];
+    for (let i = 0; i < 800; i++) {
+      const geo = new THREE.SphereGeometry(0.05, 6, 6);
+      const mat = new THREE.MeshBasicMaterial({ color: 0xffffff });
+      const star = new THREE.Mesh(geo, mat);
+      star.position.set((Math.random() - 0.5) * 100, (Math.random() - 0.5) * 100, (Math.random() - 0.5) * 100);
       scene.add(star);
+      stars.push(star);
     }
 
     function animate() {
       requestAnimationFrame(animate);
+      stars.forEach(star => {
+        star.rotation.x += 0.002;
+        star.rotation.y += 0.002;
+      });
       renderer.render(scene, camera);
     }
     animate();
 
     // === Text Glitch Animation with Language Cycle ===
     const surfaceText = document.getElementById('surface-text');
-    const binary = '01010011 01010101 01010010 01000110';
+    const binary = '01010011 01010101 01010010 01000110 01000001 01000011 01000101 00100000 01010100 01000101 01001110 01010011 01001001 01001111 01001110';
     const languageCycle = [
-      '表面张力',     // Chinese
+      '表面张力', // Chinese
       'Поверхностное натяжение', // Russian
-      'Surface Tension',
-      'Surface Tension',
+      'SURFACE TENSION',
+      'SURFACE TENSION',
       'サーフェステンション', // Japanese
-      'சூர்பெஸ் பென்ஷன்', // Tamil
-      'Superficie Tension', // French
+      'சர்பேஸ் டென்ஷன்', // Tamil
+      'Tension de surface', // French
       'सरफेस टेंशन' // Hindi
     ];
 
@@ -61,35 +124,37 @@
     function cycleLanguages() {
       if (index < languageCycle.length) {
         gsap.to(surfaceText, {
-          duration: 0.8,
+          duration: 0.4,
           text: languageCycle[index],
+          ease: "power2.out",
           onComplete: () => {
             index++;
-            setTimeout(cycleLanguages, 500);
+            setTimeout(cycleLanguages, 250);
           }
         });
       } else {
-        gsap.to(surfaceText, { duration: 1, text: 'SURFACE TENSION' });
+        gsap.to(surfaceText, { duration: 0.6, text: 'SURFACE TENSION' });
       }
     }
 
     window.onload = cycleLanguages;
 
     surfaceText.addEventListener('mouseover', () => {
+      surfaceText.classList.add('binary');
       surfaceText.innerText = binary;
     });
 
     surfaceText.addEventListener('mouseout', () => {
+      surfaceText.classList.remove('binary');
       surfaceText.innerText = 'SURFACE TENSION';
     });
 
     surfaceText.addEventListener('click', () => {
-      // fill text with bouncing star effect
-      gsap.to(scene.children, {
+      gsap.to(stars, {
         duration: 1,
-        x: () => (Math.random() - 0.5) * 4,
-        y: () => (Math.random() - 0.5) * 4,
-        z: () => (Math.random() - 0.5) * 4,
+        x: () => (Math.random() - 0.5) * 10,
+        y: () => (Math.random() - 0.5) * 10,
+        z: () => (Math.random() - 0.5) * 10,
         repeat: -1,
         yoyo: true,
         ease: 'sine.inOut'
